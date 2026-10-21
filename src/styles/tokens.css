@@ -1,0 +1,119 @@
+/* Change these foundations once to rebrand the whole workspace. */
+:root {
+  color-scheme: light;
+  --page: #f5f7fb;
+  --surface: #ffffff;
+  --surface-soft: #f8f9fc;
+  --inset: #f0f3f8;
+  --ink: #26354a;
+  --muted: #6b778a;
+  --faint: #8893a4;
+  --edge: #e3e8f0;
+  --edge-strong: #ced7e3;
+  --accent: #087e7e;
+  --accent-hover: #086666;
+  --accent-rgb: 8, 126, 126;
+  --link: var(--accent);
+  --teal: #087e7e;
+  --violet: #7b5ac4;
+  --blue: #3c73c8;
+  --rose: #be5b82;
+  --amber: #9b6c19;
+  --danger: #bc3e55;
+  --shadow: 0 2px 3px #1b2b4503, 0 8px 28px #1b2b4505;
+  --shadow-floating: 0 18px 70px #1b2b4526, 0 2px 8px #1b2b450a;
+  --radius: 18px;
+  --radius-control: 10px;
+  --header-height: 68px;
+  --sidebar-width: 242px;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-heading: 'Sora', var(--font-body);
+  --tblr-font-sans-serif: var(--font-body);
+  --tblr-body-font-family: var(--font-body);
+  --tblr-body-bg: var(--page);
+  --tblr-body-color: var(--ink);
+  --tblr-border-color: var(--edge);
+  --tblr-primary: var(--accent);
+  --tblr-primary-rgb: var(--accent-rgb);
+  --tblr-link-color: var(--accent);
+  --tblr-link-hover-color: var(--accent-hover);
+}
+:root[data-accent='blue'] {
+  --accent: #3268bf;
+  --accent-hover: #27549c;
+  --accent-rgb: 50, 104, 191;
+}
+:root[data-accent='violet'] {
+  --accent: #7954bb;
+  --accent-hover: #64419f;
+  --accent-rgb: 121, 84, 187;
+}
+:root[data-accent='rose'] {
+  --accent: #b74f79;
+  --accent-hover: #9b3e64;
+  --accent-rgb: 183, 79, 121;
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --page: #17191e;
+  --surface: #202329;
+  --surface-soft: #24272f;
+  --inset: #1a1d23;
+  --ink: #edeef3;
+  --muted: #a3aab9;
+  --faint: #858e9f;
+  --edge: #323641;
+  --edge-strong: #454c5b;
+  --teal: #61c6bd;
+  --violet: #b59be9;
+  --blue: #8ab5f3;
+  --rose: #e79aba;
+  --amber: #e5bc73;
+  --danger: #ed8d9c;
+  --link: #79d3cb;
+  --shadow: 0 4px 24px #0000000a;
+  --shadow-floating: 0 18px 80px #00000066;
+  --tblr-dark-mode-border-color: var(--edge);
+}
+:root[data-theme='dark'][data-accent='blue'] {
+  --link: #9ec4ff;
+}
+:root[data-theme='dark'][data-accent='violet'] {
+  --link: #cbb2f5;
+}
+:root[data-theme='dark'][data-accent='rose'] {
+  --link: #f2abc8;
+}
+.tone-neutral {
+  --tone: var(--muted);
+}
+.tone-teal {
+  --tone: var(--teal);
+}
+.tone-violet {
+  --tone: var(--violet);
+}
+.tone-blue {
+  --tone: var(--blue);
+}
+.tone-rose {
+  --tone: var(--rose);
+}
+.tone-amber {
+  --tone: var(--amber);
+}
+.teal {
+  --swatch: #087e7e;
+}
+.violet {
+  --swatch: #7b5ac4;
+}
+.blue {
+  --swatch: #3c73c8;
+}
+.rose {
+  --swatch: #be5b82;
+}
+.amber {
+  --swatch: #9b6c19;
+}
