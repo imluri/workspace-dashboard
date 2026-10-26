@@ -8,6 +8,7 @@ export type Project = {
   progress: number;
   due: string;
   team: string[];
+  workspaceTeam?: string;
   tone: 'teal' | 'violet' | 'blue' | 'rose';
 };
 export type Person = {

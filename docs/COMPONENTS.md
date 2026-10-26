@@ -9,7 +9,7 @@ Primitives are exported from `src/components/ui.tsx`. They use standard HTML and
 | `PageHeading` | Page identity and actions               | `eyebrow`, `title`, `description`, `actions`                      |
 | `Card`        | Rounded themed surface/section          | `id`, `className`, children                                       |
 | `Field`       | Label, hint and validation message      | `label`, `htmlFor`, `hint`, `error`, `optional`                   |
-| `Dialog`      | Controlled native modal                 | `open`, `onClose`, `title`, `description`, children               |
+| `Dialog`      | Controlled native modal                 | `open`, `onClose`, `title`, `description`, `busy`, children       |
 | `Badge`       | Quiet category or semantic label        | `tone`, `dot`, children                                           |
 | `StatusBadge` | Common demo status mapping              | `status`                                                          |
 | `Avatar`      | Initials-based identity                 | `name`, `tone`, `size`                                            |
@@ -49,7 +49,11 @@ The `htmlFor` prop must match the nested control’s `id`. Pass `aria-describedb
 
 ## Dialogs
 
-Use state to control `open`. The browser handles focus containment and restoration. Escape, backdrop clicks and the close button call `onClose`. Add `data-autofocus` to the first field when it should receive initial focus instead of the close button. Pair a `.dialog-body` wrapper with `.dialog-actions` for consistent spacing.
+Use state to control `open`. The browser handles modal focus containment and background inertness; the shared spring controller restores the opener after closing. Escape closes the highest open layer. Backdrop clicks and the close button request an animated close. Native `close` synchronizes React state after the spring finishes. Add `data-autofocus` to the first field when it should receive initial focus instead of the close button. Pair a `.dialog-body` wrapper with `.dialog-actions` for consistent spacing.
+
+For inline creation, keep the parent `Dialog` mounted and render the child as a sibling. `ProjectDialog` shows a complete project → create team → return with team selected example. Parent values survive. See [motion and layered dialogs](MOTION.md) for integration details, reduced motion and in-flight write handling.
+
+Pass `busy` while a real request is in flight. It marks the layer busy, disables its close button and blocks Escape, backdrop and drag dismissal. Keep the parent draft mounted until the server confirms a write. `ProjectDialog` keeps its action footer visible while its fields scroll on smaller screens.
 
 Keep destructive actions behind a concrete explanation and a clear confirmation label. See `Settings.tsx` for the reset example.
 

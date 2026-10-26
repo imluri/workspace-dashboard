@@ -23,7 +23,13 @@ export const defaultPreferences: Preferences = {
   digest: false,
 };
 type Toast = { id: string; message: string; tone: 'success' | 'info' | 'danger' };
-type DemoState = { projects: Project[]; people: Person[]; activity: ActivityItem[] };
+const initialTeams = ['Product studio', 'Operations', 'Growth'];
+type DemoState = {
+  projects: Project[];
+  people: Person[];
+  activity: ActivityItem[];
+  teams: string[];
+};
 
 function readPreferences(): Preferences {
   try {
@@ -47,7 +53,12 @@ function readPreferences(): Preferences {
 }
 
 function readDemoState(): DemoState {
-  const fallback = { projects: initialProjects, people: initialPeople, activity: initialActivity };
+  const fallback = {
+    projects: initialProjects,
+    people: initialPeople,
+    activity: initialActivity,
+    teams: initialTeams,
+  };
   try {
     const value: unknown = JSON.parse(localStorage.getItem('workspace.demo.v1') || 'null');
     if (!value || typeof value !== 'object') return fallback;
@@ -68,7 +79,9 @@ function readDemoState(): DemoState {
           /^\d{4}-\d{2}-\d{2}$/.test(p.due) &&
           Number.isFinite(Date.parse(p.due)) &&
           Array.isArray(p.team) &&
-          p.team.every((n) => typeof n === 'string'),
+          p.team.every((n) => typeof n === 'string') &&
+          (p.workspaceTeam === undefined ||
+            (typeof p.workspaceTeam === 'string' && p.workspaceTeam.length <= 60)),
       )
     )
       return fallback;
@@ -88,7 +101,14 @@ function readDemoState(): DemoState {
       )
     )
       return fallback;
-    return data;
+    return {
+      ...data,
+      teams:
+        Array.isArray(data.teams) &&
+        data.teams.every((team) => typeof team === 'string' && team.length <= 60)
+          ? data.teams
+          : initialTeams,
+    };
   } catch {
     return fallback;
   }
@@ -102,6 +122,7 @@ type WorkspaceState = {
   addProject: (value: Omit<Project, 'id' | 'progress' | 'team'>) => void;
   updateProject: (id: string, status: Project['status']) => void;
   addPerson: (value: Omit<Person, 'id' | 'status' | 'tone'>) => void;
+  addTeam: (name: string) => void;
   resetDemo: () => void;
   toasts: Toast[];
   toast: (message: string, tone?: Toast['tone']) => void;
@@ -230,6 +251,23 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       }));
       toast('Project status updated.');
     },
+    addTeam: (name) => {
+      const trimmed = name.trim().slice(0, 60);
+      if (!trimmed) return;
+      setData((current) =>
+        current.teams.some((team) => team.toLowerCase() === trimmed.toLowerCase())
+          ? current
+          : {
+              ...current,
+              teams: [...current.teams, trimmed],
+              activity: [event('created a team', trimmed, 'Workspace'), ...current.activity].slice(
+                0,
+                100,
+              ),
+            },
+      );
+      toast('Team added. Your project draft is still here.');
+    },
     addPerson: (person) => {
       setData((current) => ({
         ...current,
@@ -245,7 +283,17 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       toast('Demo invitation added. No email was sent.', 'info');
     },
     resetDemo: () => {
-      setData({ projects: initialProjects, people: initialPeople, activity: initialActivity });
+      try {
+        localStorage.removeItem('workspace.overview.hidden.v1');
+      } catch {
+        /* Session state is still reset below. */
+      }
+      setData({
+        projects: initialProjects,
+        people: initialPeople,
+        activity: initialActivity,
+        teams: initialTeams,
+      });
       setPreferences(defaultPreferences);
       toast('Demo workspace reset to its starting point.');
     },

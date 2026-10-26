@@ -91,6 +91,12 @@ export const dashboardConfig = {
       description: 'Accessible dialogs, alerts and toast messages',
     },
     {
+      label: 'Layered creation',
+      to: '/elements?section=feedback&demo=layers',
+      icon: IconForms,
+      description: 'Create a missing team inside a project dialog without losing your draft',
+    },
+    {
       label: 'Appearance',
       to: '/settings?section=appearance',
       icon: IconSettings,

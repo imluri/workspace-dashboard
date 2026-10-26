@@ -15,6 +15,7 @@ export function Settings() {
   const { preferences, savePreferences, resetDemo } = useWorkspace();
   const [form, setForm] = useState(preferences);
   const [confirm, setConfirm] = useState(false);
+  const [saved, setSaved] = useState(false);
   useEffect(() => setForm(preferences), [preferences]);
   const dirty = JSON.stringify(form) !== JSON.stringify(preferences);
   return (
@@ -32,6 +33,7 @@ export function Settings() {
       />
       <form
         className="settings-layout"
+        onChange={() => setSaved(false)}
         onSubmit={(event) => {
           event.preventDefault();
           savePreferences({
@@ -40,6 +42,7 @@ export function Settings() {
             workspace: form.workspace.trim(),
             email: form.email.trim(),
           });
+          setSaved(true);
         }}
       >
         <div className="settings-sections">
@@ -62,6 +65,7 @@ export function Settings() {
                 <input
                   className="form-control"
                   id="profile-name"
+                  placeholder="e.g. Alex Morgan"
                   value={form.name}
                   onChange={(event) => setForm({ ...form, name: event.target.value })}
                   maxLength={80}
@@ -74,6 +78,7 @@ export function Settings() {
                   className="form-control"
                   type="email"
                   id="profile-email"
+                  placeholder="alex@example.com"
                   value={form.email}
                   onChange={(event) => setForm({ ...form, email: event.target.value })}
                   maxLength={120}
@@ -89,6 +94,7 @@ export function Settings() {
               <input
                 className="form-control"
                 id="workspace-name"
+                placeholder="e.g. Studio workspace"
                 value={form.workspace}
                 onChange={(event) => setForm({ ...form, workspace: event.target.value })}
                 maxLength={60}
@@ -214,8 +220,8 @@ export function Settings() {
               Discard
             </Button>
             <Button type="submit" disabled={!dirty}>
-              <IconCheck size={17} />
-              Save changes
+              {saved && !dirty && <IconCheck size={17} />}
+              {saved && !dirty ? 'Applied' : 'Save changes'}
             </Button>
           </div>
         </div>

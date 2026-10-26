@@ -9,6 +9,7 @@ import {
 } from '@tabler/icons-react';
 import { initials } from '../data';
 import { useWorkspace } from '../store';
+import { openPortalLayer, closePortalLayer, topPortalLayer } from '../lib/motion';
 
 export function Button({
   variant = 'primary',
@@ -80,7 +81,7 @@ export function Card({
   id?: string;
 }) {
   return (
-    <section id={id} className={`card panel ${className}`}>
+    <section id={id} className={`card panel ${className}`} data-motion-enter>
       {children}
     </section>
   );
@@ -205,6 +206,7 @@ export function Dialog({
   description,
   children,
   className = '',
+  busy = false,
 }: {
   open: boolean;
   onClose: () => void;
@@ -212,27 +214,38 @@ export function Dialog({
   description?: string;
   children: ReactNode;
   className?: string;
+  busy?: boolean;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
+  // Preserve details while the close spring runs, including route-owned conditional content.
+  const snapshot = useRef({ title, description, children });
+  if (open) snapshot.current = { title, description, children };
+  const rendered = snapshot.current;
   const titleId = useId();
   const descriptionId = useId();
   useEffect(() => {
     const dialog = ref.current;
-    if (open && dialog && !dialog.open) {
-      dialog.showModal();
+    if (open && dialog) {
+      openPortalLayer(dialog);
       dialog.querySelector<HTMLElement>('[data-autofocus]')?.focus();
     }
-    if (!open && dialog?.open) dialog.close();
+    if (!open && dialog?.open) void closePortalLayer(dialog);
   }, [open]);
   return (
     <dialog
       ref={ref}
+      aria-busy={busy || undefined}
+      data-layer-busy={busy ? 'true' : undefined}
       className={`workspace-dialog ${className}`}
       aria-labelledby={titleId}
-      aria-describedby={description ? descriptionId : undefined}
-      onCancel={onClose}
+      aria-describedby={rendered.description ? descriptionId : undefined}
+      onCancel={(event) => {
+        event.preventDefault();
+        if (!busy && topPortalLayer() === event.currentTarget) onClose();
+      }}
       onClose={onClose}
       onClick={(event) => {
+        if (busy || topPortalLayer() !== event.currentTarget) return;
         if (event.target === event.currentTarget) {
           const box = event.currentTarget.getBoundingClientRect();
           if (
@@ -245,16 +258,16 @@ export function Dialog({
         }
       }}
     >
-      <div className="dialog-header">
+      <div className="dialog-header" data-layer-handle>
         <div>
-          <h2 id={titleId}>{title}</h2>
-          {description && <p id={descriptionId}>{description}</p>}
+          <h2 id={titleId}>{rendered.title}</h2>
+          {rendered.description && <p id={descriptionId}>{rendered.description}</p>}
         </div>
-        <IconButton label="Close dialog" onClick={onClose}>
+        <IconButton label="Close dialog" onClick={onClose} disabled={busy}>
           <IconX size={20} />
         </IconButton>
       </div>
-      {children}
+      {rendered.children}
     </dialog>
   );
 }

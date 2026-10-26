@@ -18,6 +18,8 @@ import { useWorkspace } from '../store';
 import { Avatar, Badge, IconButton, ToastRegion } from './ui';
 import { CommandSearch } from './CommandSearch';
 import { GuidePanel } from './GuidePanel';
+import { GroupedNavigation } from './GroupedNavigation';
+import { installPortalMotion, revealPortalElements, topPortalLayer } from '../lib/motion';
 
 export function BrandMark() {
   return (
@@ -41,13 +43,17 @@ export function AppShell() {
     .find((item) => item.to === location.pathname);
   const title = current?.label || 'Page not found';
 
+  useEffect(() => installPortalMotion(), []);
+
   useEffect(() => {
     const keydown = (event: KeyboardEvent) => {
+      const topLayer = topPortalLayer();
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+        if (topLayer && !topLayer.classList.contains('command-dialog')) return;
         event.preventDefault();
         setSearchOpen((open) => !open);
       }
-      if (event.key === 'Escape') setAccountOpen(false);
+      if (event.key === 'Escape' && !topLayer) setAccountOpen(false);
     };
     const outside = (event: PointerEvent) => {
       if (!accountRef.current?.contains(event.target as Node)) setAccountOpen(false);
@@ -65,6 +71,7 @@ export function AppShell() {
     setAccountOpen(false);
     let timer: ReturnType<typeof setTimeout> | undefined;
     const frame = requestAnimationFrame(() => {
+      revealPortalElements();
       const section = new URLSearchParams(location.search).get('section');
       const target = section && document.getElementById(section);
       if (target) {
@@ -141,23 +148,7 @@ export function AppShell() {
           </kbd>
         </button>
         <nav className="sidebar-scroll">
-          {dashboardConfig.navigation.map((group) => (
-            <div className="nav-group" key={group.label}>
-              <p className="nav-group-label">{group.label}</p>
-              {group.items.map((item) => (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  className={`nav-item ${location.pathname === item.to ? 'active' : ''}`}
-                  aria-current={location.pathname === item.to ? 'page' : undefined}
-                >
-                  <item.icon size={20} />
-                  <span>{item.label}</span>
-                  {location.pathname === item.to && <span className="nav-active-dot" />}
-                </Link>
-              ))}
-            </div>
-          ))}
+          <GroupedNavigation />
           <div className="sidebar-note">
             <span className="note-icon">
               <IconHelpCircle size={18} />

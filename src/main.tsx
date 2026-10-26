@@ -8,6 +8,7 @@ import '@fontsource/sora/600.css';
 import '@tabler/core/dist/css/tabler.min.css';
 import './styles/tokens.css';
 import './styles/dashboard.css';
+import './styles/workspace-current.css';
 import { App } from './App';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

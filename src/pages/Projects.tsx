@@ -36,14 +36,21 @@ export function Projects() {
   const projects = data.projects.filter(
     (project) =>
       (status === 'All statuses' || project.status === status) &&
-      `${project.name} ${project.category} ${project.description}`
+      `${project.name} ${project.category} ${project.description} ${project.workspaceTeam || ''}`
         .toLowerCase()
         .includes(query.toLowerCase()),
   );
   const exportProjects = () => {
     downloadCsv('workspace-projects.csv', [
-      ['Project', 'Category', 'Status', 'Progress', 'Due'],
-      ...projects.map((p) => [p.name, p.category, p.status, p.progress, p.due]),
+      ['Project', 'Category', 'Workspace team', 'Status', 'Progress', 'Due'],
+      ...projects.map((p) => [
+        p.name,
+        p.category,
+        p.workspaceTeam || '',
+        p.status,
+        p.progress,
+        p.due,
+      ]),
     ]);
     toast(`Exported ${projects.length} projects.`);
   };
@@ -153,6 +160,9 @@ export function Projects() {
                 <StatusBadge status={project.status} />
               </div>
               <Badge tone="neutral">{project.category}</Badge>
+              {project.workspaceTeam && (
+                <small className="cell-subtitle">{project.workspaceTeam}</small>
+              )}
               <h2>
                 <button className="plain-button" onClick={() => openProject(project)}>
                   {project.name}
@@ -205,6 +215,9 @@ export function Projects() {
                     <td data-label="Category">{project.category}</td>
                     <td data-label="Team">
                       <AvatarStack names={project.team} />
+                      {project.workspaceTeam && (
+                        <small className="cell-subtitle">{project.workspaceTeam}</small>
+                      )}
                     </td>
                     <td data-label="Status">
                       <StatusBadge status={project.status} />
@@ -244,7 +257,10 @@ export function Projects() {
               </div>
               <div>
                 <dt>Team</dt>
-                <dd>{selected.team.join(', ')}</dd>
+                <dd>
+                  {selected.workspaceTeam ? `${selected.workspaceTeam}: ` : ''}
+                  {selected.team.join(', ')}
+                </dd>
               </div>
               <div>
                 <dt>Progress</dt>

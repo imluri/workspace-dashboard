@@ -61,11 +61,20 @@ For production, replace the data and mutation functions with your API client or 
 Browser keys:
 
 ```text
-workspace.demo.v1          Projects, people and activity
+  workspace.demo.v1          Projects, people, teams and activity
 workspace.preferences.v1  Theme, accent, demo profile and workspace label
+  workspace.overview.hidden.v1 Overview display preferences only
 ```
 
-The parser falls back to seed data when stored JSON is unavailable or malformed. Storage failures keep the session usable. Reset affects these keys only. Increment the version when you change the persisted shape.
+The parser falls back to seed data when stored JSON is unavailable or malformed. Older saved records receive default teams. Storage failures keep the session usable. Reset affects these keys only. Increment the version when making incompatible changes to the persisted shape.
+
+### Current overview patterns
+
+`Overview.tsx` mirrors the current workspace organization: quick actions, work-area desks, current-record glance indicators, actionable queues and scoped summary cards. Fixed billing and room examples are labelled as fictional and retain their basis in CSV exports. Replace those examples with aggregate endpoints scoped by the authenticated account’s server-side permissions. Display preferences are not permission controls.
+
+`GroupedNavigation.tsx` keeps desktop sections in compact flyouts with normal links and Escape support. Smaller screens retain search navigation. Keep navigation groups and search entries in `config.ts` aligned with your backend permissions.
+
+`src/styles/workspace-current.css` layers these patterns over the original shared elements. The spring controller is documented in [MOTION.md](MOTION.md).
 
 The CSV exporter quotes values and neutralises spreadsheet formula prefixes. Keep that behaviour when adapting exports to user-supplied data.
 

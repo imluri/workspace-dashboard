@@ -16,6 +16,7 @@ import {
   IconCopy,
 } from '@tabler/icons-react';
 import { useWorkspace } from '../store';
+import { ProjectDialog } from '../components/RecordDialogs';
 import {
   Avatar,
   AvatarStack,
@@ -36,6 +37,7 @@ export function Elements() {
   const [loading, setLoading] = useState(false);
   const [liked, setLiked] = useState(false);
   const [dialog, setDialog] = useState(false);
+  const [layeredOpen, setLayeredOpen] = useState(false);
   const [tab, setTab] = useState('Overview');
   const [enabled, setEnabled] = useState(true);
   const [range, setRange] = useState(60);
@@ -479,6 +481,13 @@ export function Elements() {
             <Button variant="secondary" onClick={() => setDialog(true)}>
               Open dialog
             </Button>
+            <Button onClick={() => setLayeredOpen(true)}>
+              <IconPlus size={17} />
+              Try layered creation
+            </Button>
+            <p className="field-hint">
+              Create a project, then add a missing team above it. Your project fields stay in place.
+            </p>
           </div>
         </Card>
         <Card className="element-section">
@@ -501,6 +510,7 @@ export function Elements() {
           />
         </Card>
       </div>
+      <ProjectDialog open={layeredOpen} onClose={() => setLayeredOpen(false)} />
       <Dialog
         open={dialog}
         onClose={() => setDialog(false)}
